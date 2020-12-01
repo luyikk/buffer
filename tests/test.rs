@@ -1,4 +1,4 @@
-use buffer::Data;
+use data_rw::Data;
 use std::error::Error;
 use std::collections::{HashMap, BTreeMap};
 

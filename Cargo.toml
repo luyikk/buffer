@@ -1,5 +1,5 @@
 [package]
-name = "buffer"
+name = "data-rw"
 version = "0.1.0"
 authors = ["luyi <luyikk@126.com>"]
 edition = "2018"

@@ -67,6 +67,16 @@ impl Default for Data {
     }
 }
 
+impl From<Vec<u8>> for Data{
+    #[inline]
+    fn from(data: Vec<u8>) -> Self {
+        Data {
+            buf: data,
+            offset: 0
+        }
+    }
+}
+
 impl Data {
     #[inline]
     pub fn new() -> Data {
@@ -487,33 +497,37 @@ make_writer!(f32);
 make_writer!(f64);
 
 impl Writer for String{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
        data.write_str_fixed_le(self);
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
        data.write_str_fixed(self);
     }
 }
 impl Writer for &str{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
         data.write_str_fixed_le(self);
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
         data.write_str_fixed(self);
     }
 }
 impl Writer for &[u8]{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
         data.write_buff_fixed_le(self)
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
         data.write_buff_fixed(self)
     }
 }
 impl<K:Writer,V:Writer> Writer for HashMap<K,V>{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
         data.put_u32_le(self.len() as u32);
         for (k,v) in self {
@@ -521,7 +535,7 @@ impl<K:Writer,V:Writer> Writer for HashMap<K,V>{
             data.write_to_le(v);
         }
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
         data.put_u32(self.len() as u32);
         for (k,v) in self {
@@ -532,6 +546,7 @@ impl<K:Writer,V:Writer> Writer for HashMap<K,V>{
 }
 
 impl <K:Writer,V:Writer> Writer for BTreeMap<K,V>{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
         data.put_u32_le(self.len() as u32);
         for (k,v) in self {
@@ -539,7 +554,7 @@ impl <K:Writer,V:Writer> Writer for BTreeMap<K,V>{
             data.write_to_le(v);
         }
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
         data.put_u32(self.len() as u32);
         for (k,v) in self {
@@ -550,13 +565,14 @@ impl <K:Writer,V:Writer> Writer for BTreeMap<K,V>{
 }
 
 impl <T:Writer> Writer for Vec<T>{
+    #[inline]
     fn write_to_le(&self, data: &mut Data) {
         data.put_u32_le(self.len() as u32);
         for i in self {
             data.write_to_le(i);
         }
     }
-
+    #[inline]
     fn write_to(&self, data: &mut Data) {
         data.put_u32(self.len() as u32);
         for i in self {
@@ -666,15 +682,17 @@ impl Reader for i8 {
     }
 }
 impl Reader for String{
+    #[inline]
     fn get(data: &mut Data) -> io::Result<Self> where Self: Sized {
          data.get_str_fixed()
     }
-
+    #[inline]
     fn get_le(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.get_str_fixed_le()
     }
 }
 impl <T:Reader> Reader for Vec<T>{
+    #[inline]
     fn get(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len = data.get::<u32>()? as usize;
         let mut v =Vec::with_capacity(len);
@@ -683,7 +701,7 @@ impl <T:Reader> Reader for Vec<T>{
         }
         Ok(v)
     }
-
+    #[inline]
     fn get_le(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len = data.get_le::<u32>()? as usize;
         let mut v =Vec::with_capacity(len);
@@ -694,6 +712,7 @@ impl <T:Reader> Reader for Vec<T>{
     }
 }
 impl <K:Reader+Eq+Hash,V:Reader> Reader for HashMap<K,V>{
+    #[inline]
     fn get(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len=data.get::<u32>()? as usize;
         let mut map=HashMap::with_capacity(len);
@@ -703,7 +722,7 @@ impl <K:Reader+Eq+Hash,V:Reader> Reader for HashMap<K,V>{
 
         Ok(map)
     }
-
+    #[inline]
     fn get_le(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len=data.get_le::<u32>()? as usize;
         let mut map=HashMap::with_capacity(len);
@@ -715,6 +734,7 @@ impl <K:Reader+Eq+Hash,V:Reader> Reader for HashMap<K,V>{
     }
 }
 impl <K:Reader+Ord,V:Reader> Reader for BTreeMap<K,V>{
+    #[inline]
     fn get(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len=data.get::<u32>()? as usize;
         let mut map=BTreeMap::new();
@@ -724,7 +744,7 @@ impl <K:Reader+Ord,V:Reader> Reader for BTreeMap<K,V>{
 
         Ok(map)
     }
-
+    #[inline]
     fn get_le(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len=data.get_le::<u32>()? as usize;
         let mut map=BTreeMap::new();
@@ -762,66 +782,77 @@ pub trait WriteBit7 {
 }
 
 impl WriteBit7 for u8{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for i8{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for bool{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for f32{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for f64{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for i128{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for u128{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_to_le(self)
     }
 }
 
 impl WriteBit7 for String{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_str_bit7(self)
     }
 }
 
 impl WriteBit7 for &str{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_str_bit7(self)
     }
 }
 
 impl WriteBit7 for  &[u8]{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
        data.write_buff_bit7(self)
     }
 }
 
 impl <T:WriteBit7> WriteBit7 for Vec<T>{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_bit7(&(self.len() as u64));
         for i in self {
@@ -831,6 +862,7 @@ impl <T:WriteBit7> WriteBit7 for Vec<T>{
 }
 
 impl <K:WriteBit7,V:WriteBit7> WriteBit7 for HashMap<K,V>{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_bit7(&(self.len() as u64));
         for (k,v) in self {
@@ -841,6 +873,7 @@ impl <K:WriteBit7,V:WriteBit7> WriteBit7 for HashMap<K,V>{
 }
 
 impl <K:WriteBit7,V:WriteBit7> WriteBit7 for BTreeMap<K,V>{
+    #[inline]
     fn write_bit7(&self, data: &mut Data) {
         data.write_bit7(&(self.len() as u64));
         for (k,v) in self {
@@ -889,6 +922,7 @@ pub trait ReadBit7 {
 
 impl ReadBit7 for u8{
     type RetType = u8;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((1,data.get_le::<Self::RetType>()?))
     }
@@ -896,6 +930,7 @@ impl ReadBit7 for u8{
 
 impl ReadBit7 for i8{
     type RetType = i8;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((1,data.get_le::<Self::RetType>()?))
     }
@@ -903,6 +938,7 @@ impl ReadBit7 for i8{
 
 impl ReadBit7 for bool{
     type RetType = bool;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((1,data.get_le::<Self::RetType>()?))
     }
@@ -910,6 +946,7 @@ impl ReadBit7 for bool{
 
 impl ReadBit7 for f32{
     type RetType = f32;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((4,data.get_le::<Self::RetType>()?))
     }
@@ -917,6 +954,7 @@ impl ReadBit7 for f32{
 
 impl ReadBit7 for f64{
     type RetType = f64;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((8,data.get_le::<Self::RetType>()?))
     }
@@ -924,6 +962,7 @@ impl ReadBit7 for f64{
 
 impl ReadBit7 for i128{
     type RetType = i128;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((16,data.get_le::<Self::RetType>()?))
     }
@@ -931,6 +970,7 @@ impl ReadBit7 for i128{
 
 impl ReadBit7 for u128{
     type RetType = u128;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         Ok((16,data.get_le::<Self::RetType>()?))
     }
@@ -938,7 +978,7 @@ impl ReadBit7 for u128{
 
 impl ReadBit7 for String{
     type RetType = String;
-
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         data.get_str_bit7()
     }
@@ -946,6 +986,7 @@ impl ReadBit7 for String{
 
 impl<T:ReadBit7+ReadBit7<RetType = T>> ReadBit7 for Vec<T>{
     type RetType = Vec<T>;
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)> {
         let (mut size,len)= data.get_bit7::<u64>()?;
         let mut vec =Vec::with_capacity(len as usize);
@@ -961,10 +1002,9 @@ impl<T:ReadBit7+ReadBit7<RetType = T>> ReadBit7 for Vec<T>{
 
 impl <K:ReadBit7+ReadBit7<RetType = K>,V:ReadBit7+ReadBit7<RetType = V>> ReadBit7 for HashMap<K,V> where <K as ReadBit7>::RetType: Eq+Hash{
     type RetType = HashMap<K,V>;
-
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)>{
         let (mut size,len)=data.get_bit7::<u64>()?;
-
         let mut map=HashMap::with_capacity(len as usize);
         for _ in 0..len {
             let (k_size,k)=data.get_bit7::<K>()?;
@@ -982,7 +1022,7 @@ impl <K:ReadBit7+ReadBit7<RetType = K>,V:ReadBit7+ReadBit7<RetType = V>> ReadBit
 
 impl <K:ReadBit7+ReadBit7<RetType = K>,V:ReadBit7+ReadBit7<RetType = V>> ReadBit7 for BTreeMap<K,V> where <K as ReadBit7>::RetType: Ord{
     type RetType = BTreeMap<K,V>;
-
+    #[inline]
     fn get_bit7(data: &mut Data) -> io::Result<(usize, Self::RetType)>{
         let (mut size,len)=data.get_bit7::<u64>()?;
 
