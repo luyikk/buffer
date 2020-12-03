@@ -5,6 +5,7 @@ use std::io;
 use std::io::{ErrorKind};
 use std::collections::{HashMap, BTreeMap};
 use std::hash::Hash;
+use std::ops::Deref;
 
 
 #[derive(Debug)]
@@ -64,6 +65,13 @@ impl Default for Data {
             buf: Vec::new(),
             offset: 0
         }
+    }
+}
+
+impl Deref for Data{
+    type Target = [u8];
+    fn deref(&self) -> &Self::Target {
+        self.buf.deref()
     }
 }
 
