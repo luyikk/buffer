@@ -5,7 +5,7 @@ use std::io;
 use std::io::{ErrorKind};
 use std::collections::{HashMap, BTreeMap};
 use std::hash::Hash;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 
 #[derive(Debug)]
@@ -75,6 +75,12 @@ impl Deref for Data{
     }
 }
 
+impl DerefMut for Data{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.buf.deref_mut()
+    }
+}
+
 impl From<Vec<u8>> for Data{
     #[inline]
     fn from(data: Vec<u8>) -> Self {
@@ -95,6 +101,14 @@ impl Data {
     pub fn with_capacity(cap: usize) -> Data {
         Data {
             buf: Vec::with_capacity(cap),
+            offset: 0
+        }
+    }
+
+    #[inline]
+    pub fn with_len(len:usize,default:u8)->Data{
+        Data {
+            buf: vec![default;len],
             offset: 0
         }
     }

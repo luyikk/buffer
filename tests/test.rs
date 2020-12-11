@@ -1,6 +1,7 @@
 use data_rw::Data;
 use std::error::Error;
 use std::collections::{HashMap, BTreeMap};
+use bytes::Buf;
 
 #[test]
 fn test_le()->Result<(),Box<dyn Error>> {
@@ -164,4 +165,49 @@ fn test_bit7()->Result<(),Box<dyn Error>> {
     assert_eq!(v, btreemap);
 
     Ok(())
+}
+
+#[test]
+fn test_deref_mut()->Result<(),Box<dyn Error>> {
+    let mut data = Data::new();
+    data.write_to_le(&34u8);
+    data.write_to_le(&4);
+    data.write_to_le(&true);
+    data.write_to_le(&0.556f32);
+    data.write_to_le(&"adfadfaf");
+    let vec:Vec<i32>=vec![2,3,4,5,6,7,7];
+    data.write_to_le(&vec);
+    let vec=vec!["11","22","33","44"];
+    data.write_to_le(&vec);
+
+    let buff=data.bytes();
+
+    println!("{:?}",buff);
+
+    fn copy(source:&[u8],target:&mut [u8]){
+        target.copy_from_slice(source);
+    }
+
+    let mut data=Data::with_len(buff.len(),0);
+    copy(buff,&mut data);
+
+    let v = data.get_le::<u8>()?;
+    assert_eq!(v, 34u8);
+    let v = data.get_le::<i32>()?;
+    assert_eq!(v, 4);
+    let v = data.get_le::<bool>()?;
+    assert_eq!(v, true);
+    let v = data.get_le::<f32>()?;
+    assert_eq!(v, 0.556f32);
+    let v = data.get_le::<String>()?;
+    assert_eq!(v, "adfadfaf");
+    let vec:Vec<i32>=vec![2,3,4,5,6,7,7];
+    let v= data.get_le::<Vec<i32>>()?;
+    assert_eq!(v, vec);
+    let vec=vec!["11","22","33","44"];
+    let v= data.get_le::<Vec<String>>()?;
+    assert_eq!(v, vec);
+
+    Ok(())
+
 }
