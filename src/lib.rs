@@ -1062,77 +1062,77 @@ impl <K:Reader+Ord,V:Reader>  Into<BTreeMap<K,V>> for Data{
     }
 }
 
-pub trait ReadAs<T:Reader>{
-    fn read_as(&mut self)->io::Result<T>;
+pub trait ReadFrom{
+    fn readfrom(data:&mut Data)->io::Result<Self> where Self: Sized;
 }
 
-
-macro_rules! make_read_as {
+macro_rules! make_read_from {
     ($type:ty) => {
-        impl ReadAs<$type> for Data{
-            #[inline]
-            fn read_as(&mut self) -> io::Result<$type> {
-                self.set_position(0);
-                <$type>::get_le(self)
+        impl ReadFrom for $type{
+            fn readfrom(data: &mut Data) -> io::Result<Self> {
+                data.set_position(0);
+                <$type>::get_le(data)
             }
         }
     };
 }
-make_read_as!(u8);
-make_read_as!(i8);
-make_read_as!(u16);
-make_read_as!(i16);
-make_read_as!(u32);
-make_read_as!(i32);
-make_read_as!(u64);
-make_read_as!(i64);
-make_read_as!(u128);
-make_read_as!(i128);
-make_read_as!(f32);
-make_read_as!(f64);
 
-impl ReadAs<String> for Data {
-    #[inline]
-    fn read_as(&mut self) -> io::Result<String> {
-        self.set_position(0);
-        Ok(String::from_utf8_lossy(&self.buf).to_string())
-    }
-}
+make_read_from!(i8);
+make_read_from!(u8);
+make_read_from!(i16);
+make_read_from!(u16);
+make_read_from!(i32);
+make_read_from!(u32);
+make_read_from!(i64);
+make_read_from!(u64);
+make_read_from!(i128);
+make_read_from!(u128);
+make_read_from!(f32);
+make_read_from!(f64);
 
-impl<T:Reader> ReadAs<Vec<T>> for Data {
-    #[inline]
-    fn read_as(&mut self) -> io::Result<Vec<T>> {
-        self.set_position(0);
-        let len= self.get_le::<i32>()? as usize;
+impl<T:Reader> ReadFrom for Vec<T>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
+        let len= data.get_le::<i32>()? as usize;
         let mut vec=Vec::with_capacity(len);
         for _ in 0..len {
-            vec.push(self.get_le::<T>()?);
+            vec.push(data.get_le::<T>()?);
         }
         Ok(vec)
     }
 }
 
-impl<K:Reader+Eq+Hash,V:Reader> ReadAs<HashMap<K,V>> for Data {
-    #[inline]
-    fn read_as(&mut self) -> io::Result<HashMap<K,V>> {
-        self.set_position(0);
-        let len= self.get_le::<i32>()? as usize;
+impl <K:Reader+Eq+Hash,V:Reader> ReadFrom for HashMap<K,V>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
+        let len= data.get_le::<i32>()? as usize;
         let mut hashmap=HashMap::with_capacity(len);
         for _ in 0..len {
-            hashmap.insert(self.get_le::<K>()?,self.get_le::<V>()?);
+            hashmap.insert(data.get_le::<K>()?,data.get_le::<V>()?);
         }
         Ok(hashmap)
     }
 }
 
-impl  <K:Reader+Ord,V:Reader> ReadAs<BTreeMap<K,V>> for Data{
-    fn read_as(&mut self) -> io::Result<BTreeMap<K, V>> {
-        let len= self.get_le::<i32>()? as usize;
+impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        let len= data.get_le::<i32>()? as usize;
         let mut btreemap=BTreeMap::new();
         for _ in 0..len{
-            btreemap.insert(self.get_le::<K>()?,
-                            self.get_le::<V>()?);
+            btreemap.insert(data.get_le::<K>()?,
+                            data.get_le::<V>()?);
         }
         Ok(btreemap)
+    }
+}
+
+pub trait ReadAs<T>{
+    fn read_as(&mut self)->io::Result<T>;
+}
+
+
+impl <T:ReadFrom> ReadAs<T> for Data{
+    fn read_as(&mut self) -> io::Result<T> {
+        T::readfrom(self)
     }
 }
