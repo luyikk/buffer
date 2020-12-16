@@ -214,6 +214,13 @@ fn test_deref_mut()->Result<(),Box<dyn Error>> {
 
 #[test]
 fn test_into(){
+
+    let mut data = Data::new();
+    let vec=vec![1u8,2u8,3u8,4u8];
+    data.write_to_le(&vec);
+    let vec2:Vec<u8>=data.into();
+    assert_eq!(vec2[4..], vec);
+
     let mut data = Data::new();
     let vec=vec!["11","22","33","44"];
     data.write_to_le(&vec);
@@ -232,6 +239,14 @@ fn test_into(){
 
 #[test]
 fn test_read_as()->Result<(),Box<dyn Error>>{
+
+    let mut data = Data::new();
+    let vec=vec![1u8,2u8,3u8,4u8];
+    data.write_to_le(&vec);
+    let vec2:Vec<u8>=data.read_as()?;
+    assert_eq!(vec2[4..], vec);
+
+
     let mut data = Data::new();
     let vec=vec!["11","22","33","44"];
     data.write_to_le(&vec);

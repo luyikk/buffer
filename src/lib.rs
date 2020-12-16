@@ -1,3 +1,4 @@
+#![feature(optin_builtin_traits,negative_impls)]
 use bytes::buf::UninitSlice;
 use bytes::{Buf, BufMut};
 use paste::paste;
@@ -1015,30 +1016,31 @@ make_into!(f32);
 make_into!(f64);
 
 
+//
+// impl Into<String> for Data{
+//     #[inline]
+//     fn into(self) -> String {
+//         String::from_utf8_lossy(&self.buf).to_string()
+//     }
+// }
 
-impl Into<String> for Data{
-    #[inline]
-    fn into(self) -> String {
-        String::from_utf8_lossy(&self.buf).to_string()
+
+
+impl<T:ReadFrom+Reader+Dummy> Into<Vec<T>> for Data{
+    fn into(mut self) -> Vec<T> {
+        self.set_position(0);
+        let len= self.get_le::<i32>().expect("into vec len error:") as usize;
+        let mut vec=Vec::with_capacity(len);
+        for _ in 0..len {
+            vec.push(T::get_le(&mut self).expect("into vec len error:"));
+        }
+        vec
     }
 }
-
 
 impl Into<Vec<u8>> for Data{
     fn into(self) -> Vec<u8> {
         self.buf
-    }
-}
-
-impl Into<Vec<String>> for Data{
-    fn into(mut self) -> Vec<String> {
-        self.set_position(0);
-        let len= self.get_le::<i32>().expect("into Vec<String> len error:") as usize;
-        let mut vec=Vec::with_capacity(len);
-        for _ in 0..len {
-            vec.push(self.get_le::<String>().expect("into Vec<String> len error:"));
-        }
-        vec
     }
 }
 
@@ -1139,9 +1141,11 @@ impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
     }
 }
 
+pub auto trait Dummy{}
+impl !Dummy for u8{}
+impl Dummy for String{}
 
-
-impl<T:Reader> ReadFrom for Vec<T>{
+impl<T:Reader+Dummy> ReadFrom for Vec<T>{
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.set_position(0);
         let len= data.get_le::<i32>()? as usize;
@@ -1150,6 +1154,12 @@ impl<T:Reader> ReadFrom for Vec<T>{
             vec.push(T::get_le(data)?);
         }
         Ok(vec)
+    }
+}
+
+impl ReadFrom for Vec<u8>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        Ok(data.buf.clone())
     }
 }
 
