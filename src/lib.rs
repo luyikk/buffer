@@ -9,7 +9,7 @@ use std::ops::{Deref, DerefMut};
 use std::collections::hash_map::RandomState;
 
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Data {
     buf: Vec<u8>,
     offset: usize
@@ -1024,21 +1024,29 @@ impl Into<String> for Data{
 }
 
 
-impl<T:Reader> Into<Vec<T>> for Data{
-    #[inline]
-    fn into(mut self) -> Vec<T> {
-        let len= self.get_le::<i32>().expect("into vec len error:") as usize;
+impl Into<Vec<u8>> for Data{
+    fn into(self) -> Vec<u8> {
+        self.buf
+    }
+}
+
+impl Into<Vec<String>> for Data{
+    fn into(mut self) -> Vec<String> {
+        self.set_position(0);
+        let len= self.get_le::<i32>().expect("into Vec<String> len error:") as usize;
         let mut vec=Vec::with_capacity(len);
         for _ in 0..len {
-            vec.push(self.get_le::<T>().expect("read vec error:"))
+            vec.push(self.get_le::<String>().expect("into Vec<String> len error:"));
         }
         vec
     }
 }
 
+
 impl <K:Reader+Eq+Hash,V:Reader> Into<HashMap<K,V>> for Data{
     #[inline]
     fn into(mut self) -> HashMap<K, V, RandomState> {
+        self.set_position(0);
         let len= self.get_le::<i32>().expect("into hashmap len error:") as usize;
         let mut hashmap=HashMap::with_capacity(len);
         for _ in 0..len{
@@ -1052,6 +1060,7 @@ impl <K:Reader+Eq+Hash,V:Reader> Into<HashMap<K,V>> for Data{
 impl <K:Reader+Ord,V:Reader>  Into<BTreeMap<K,V>> for Data{
     #[inline]
     fn into(mut self) -> BTreeMap<K, V> {
+        self.set_position(0);
         let len= self.get_le::<i32>().expect("into BTreeMap len error:") as usize;
         let mut btreemap=BTreeMap::new();
         for _ in 0..len{
@@ -1130,57 +1139,25 @@ impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
     }
 }
 
-macro_rules! make_read_from_vec {
-    ($type:ty) => {
-        impl ReadFrom for Vec<$type>{
-            #[inline]
-            fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
-                data.set_position(0);
-                let len= data.get_le::<i32>()? as usize;
-                let mut vec=Vec::with_capacity(len);
-                for _ in 0..len {
-                    vec.push(data.get_le::<$type>()?);
-                }
-                Ok(vec)
-            }
-        }
-    };
-}
 
-make_read_from_vec!(i8);
-make_read_from_vec!(i16);
-make_read_from_vec!(u16);
-make_read_from_vec!(i32);
-make_read_from_vec!(u32);
-make_read_from_vec!(i64);
-make_read_from_vec!(u64);
-make_read_from_vec!(i128);
-make_read_from_vec!(u128);
-make_read_from_vec!(f32);
-make_read_from_vec!(f64);
-make_read_from_vec!(String);
 
-impl ReadFrom for Vec<u8>{
+impl<T:Reader> ReadFrom for Vec<T>{
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.set_position(0);
-        Ok(data.buf.clone())
-    }
-}
-
-impl <T:ReadFrom> ReadFrom for Vec<Vec<T>>{
-    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         let len= data.get_le::<i32>()? as usize;
         let mut vec=Vec::with_capacity(len);
         for _ in 0..len {
-            let len= data.get_le::<i32>()? as usize;
-            let mut inner=Vec::with_capacity(len);
-            for _ in 0..len {
-                inner.push(T::readfrom(data)?);
-            }
-            vec.push(inner);
+            vec.push(T::get_le(data)?);
         }
-
         Ok(vec)
+    }
+}
+
+
+impl ReadFrom for Data{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
+        Ok(data.clone())
     }
 }
 
@@ -1196,3 +1173,4 @@ impl <T:ReadFrom> ReadAs<T> for Data{
         T::readfrom(self)
     }
 }
+
