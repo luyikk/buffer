@@ -1090,6 +1090,12 @@ make_read_from!(u128);
 make_read_from!(f32);
 make_read_from!(f64);
 
+impl ReadFrom for String{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        Ok(String::from_utf8_lossy(&data.buf).to_string())
+    }
+}
+
 impl<T:Reader> ReadFrom for Vec<T>{
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.set_position(0);
