@@ -1069,6 +1069,7 @@ pub trait ReadFrom{
 macro_rules! make_read_from {
     ($type:ty) => {
         impl ReadFrom for $type{
+             #[inline]
             fn readfrom(data: &mut Data) -> io::Result<Self> {
                 data.set_position(0);
                 <$type>::get_le(data)
@@ -1090,13 +1091,18 @@ make_read_from!(u128);
 make_read_from!(f32);
 make_read_from!(f64);
 
+
+
 impl ReadFrom for String{
+    #[inline]
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
         Ok(String::from_utf8_lossy(&data.buf).to_string())
     }
 }
 
 impl<T:Reader> ReadFrom for Vec<T>{
+    #[inline]
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.set_position(0);
         let len= data.get_le::<i32>()? as usize;
@@ -1109,6 +1115,7 @@ impl<T:Reader> ReadFrom for Vec<T>{
 }
 
 impl <K:Reader+Eq+Hash,V:Reader> ReadFrom for HashMap<K,V>{
+    #[inline]
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
         data.set_position(0);
         let len= data.get_le::<i32>()? as usize;
@@ -1121,7 +1128,9 @@ impl <K:Reader+Eq+Hash,V:Reader> ReadFrom for HashMap<K,V>{
 }
 
 impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
+    #[inline]
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
         let len= data.get_le::<i32>()? as usize;
         let mut btreemap=BTreeMap::new();
         for _ in 0..len{
@@ -1138,6 +1147,7 @@ pub trait ReadAs<T>{
 
 
 impl <T:ReadFrom> ReadAs<T> for Data{
+    #[inline]
     fn read_as(&mut self) -> io::Result<T> {
         T::readfrom(self)
     }
