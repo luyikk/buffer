@@ -20,7 +20,7 @@
   let mut hashmap=HashMap::new();
   hashmap.insert(1,"123123".to_string());
   hashmap.insert(2,"123123".to_string());
-  data.write_bit7(&hashmap);
+  data.write_to_bit7(&hashmap);
 
   let (_,v)=data.get_bit7::<HashMap<i32,String>>()?;
   assert_eq!(v, hashmap);
