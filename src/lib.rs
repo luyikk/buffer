@@ -1101,18 +1101,7 @@ impl ReadFrom for String{
     }
 }
 
-impl<T:Reader> ReadFrom for Vec<T>{
-    #[inline]
-    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
-        data.set_position(0);
-        let len= data.get_le::<i32>()? as usize;
-        let mut vec=Vec::with_capacity(len);
-        for _ in 0..len {
-            vec.push(data.get_le::<T>()?);
-        }
-        Ok(vec)
-    }
-}
+
 
 impl <K:Reader+Eq+Hash,V:Reader> ReadFrom for HashMap<K,V>{
     #[inline]
@@ -1140,6 +1129,61 @@ impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
         Ok(btreemap)
     }
 }
+
+macro_rules! make_read_from_vec {
+    ($type:ty) => {
+        impl ReadFrom for Vec<$type>{
+            #[inline]
+            fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+                data.set_position(0);
+                let len= data.get_le::<i32>()? as usize;
+                let mut vec=Vec::with_capacity(len);
+                for _ in 0..len {
+                    vec.push(data.get_le::<$type>()?);
+                }
+                Ok(vec)
+            }
+        }
+    };
+}
+
+make_read_from_vec!(i8);
+make_read_from_vec!(i16);
+make_read_from_vec!(u16);
+make_read_from_vec!(i32);
+make_read_from_vec!(u32);
+make_read_from_vec!(i64);
+make_read_from_vec!(u64);
+make_read_from_vec!(i128);
+make_read_from_vec!(u128);
+make_read_from_vec!(f32);
+make_read_from_vec!(f64);
+make_read_from_vec!(String);
+
+impl ReadFrom for Vec<u8>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        data.set_position(0);
+        Ok(data.buf.clone())
+    }
+}
+
+impl <T:ReadFrom> ReadFrom for Vec<Vec<T>>{
+    fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
+        let len= data.get_le::<i32>()? as usize;
+        let mut vec=Vec::with_capacity(len);
+        for _ in 0..len {
+            let len= data.get_le::<i32>()? as usize;
+            let mut inner=Vec::with_capacity(len);
+            for _ in 0..len {
+                inner.push(T::readfrom(data)?);
+            }
+            vec.push(inner);
+        }
+
+        Ok(vec)
+    }
+}
+
 
 pub trait ReadAs<T>{
     fn read_as(&mut self)->io::Result<T>;
