@@ -246,6 +246,12 @@ fn test_read_as()->Result<(),Box<dyn Error>>{
     let vec2:Vec<u8>=data.read_as()?;
     assert_eq!(vec2[4..], vec);
 
+    let mut data = Data::new();
+    let vec=vec![vec];
+    data.write_to_le(&vec);
+    let vec2:Vec<Vec<u8>>=data.read_as()?;
+    assert_eq!(vec2, vec);
+
 
     let mut data = Data::new();
     let vec=vec!["11","22","33","44"];

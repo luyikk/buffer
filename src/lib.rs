@@ -1144,6 +1144,7 @@ impl <K:Reader+Ord,V:Reader> ReadFrom for BTreeMap<K,V>{
 pub auto trait Dummy{}
 impl !Dummy for u8{}
 impl Dummy for String{}
+impl Dummy for Vec<u8>{}
 
 impl<T:Reader+Dummy> ReadFrom for Vec<T>{
     fn readfrom(data: &mut Data) -> io::Result<Self> where Self: Sized {
