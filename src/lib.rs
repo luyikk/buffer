@@ -1196,7 +1196,7 @@ macro_rules! make_into_data {
         impl ToData for $type{
             #[inline]
             fn to_data(self) -> Data {
-                let mut data=Data::with_capacity(5);
+                let mut data=Data::with_capacity(16);
                 data.write_to_le(&self);
                 data
             }
