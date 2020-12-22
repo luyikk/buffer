@@ -1196,8 +1196,7 @@ macro_rules! make_into_data {
         impl ToData for $type{
             #[inline]
             fn to_data(self) -> Data {
-                 let mut data=Data::with_capacity(5);
-                data.write_to_le(&(std::mem::size_of::<$type>() as u32));
+                let mut data=Data::with_capacity(5);
                 data.write_to_le(&self);
                 data
             }
@@ -1222,7 +1221,7 @@ impl ToData for String{
     #[inline]
     fn to_data(self) -> Data {
         let mut data=Data::new();
-        data.write_to_le(&self);
+        data.write(self.as_bytes());
         data
     }
 }
@@ -1231,7 +1230,7 @@ impl ToData for &str{
     #[inline]
     fn to_data(self) -> Data {
         let mut data=Data::new();
-        data.write_to_le(&self);
+        data.write(self.as_bytes());
         data
     }
 }
@@ -1241,10 +1240,7 @@ impl <T:Writer+Dummy> ToData for Vec<T>{
     fn to_data(self) -> Data {
         let mut buff = Data::with_capacity(1024);
         buff.write_to_le(&self);
-
-        let mut data=Data::with_capacity(buff.len()+4);
-        data.write_to_le(&buff.buf);
-        data
+        buff
     }
 }
 
@@ -1252,7 +1248,7 @@ impl ToData for Vec<u8>{
     #[inline]
     fn to_data(self) -> Data {
         let mut data=Data::with_capacity(self.len()+4);
-        data.write_to_le(&self);
+        data.write(&self);
         data
     }
 }
@@ -1261,10 +1257,8 @@ impl<K:Writer,V:Writer> ToData for HashMap<K,V>{
     fn to_data(self) -> Data {
         let mut buff = Data::with_capacity(1024);
         buff.write_to_le(&self);
+        buff
 
-        let mut data=Data::with_capacity(buff.len()+4);
-        data.write_to_le(&buff.buf);
-        data
     }
 }
 
@@ -1272,9 +1266,6 @@ impl<K:Writer,V:Writer> ToData for BTreeMap<K,V>{
     fn to_data(self) -> Data {
         let mut buff = Data::with_capacity(1024);
         buff.write_to_le(&self);
-
-        let mut data=Data::with_capacity(buff.len()+4);
-        data.write_to_le(&buff.buf);
-        data
+        buff
     }
 }
