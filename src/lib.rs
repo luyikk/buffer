@@ -4,6 +4,7 @@ mod wr;
 mod into;
 mod readfrom;
 mod todata;
+mod serde;
 
 use bytes::buf::UninitSlice;
 use bytes::{Buf, BufMut};
