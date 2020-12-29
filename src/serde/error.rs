@@ -15,6 +15,7 @@ pub enum  DataError{
 
 
 impl Display for DataError{
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             DataError::Io(err)=>{
@@ -34,12 +35,13 @@ impl Error for DataError{}
 
 // Parse our own error message that looks like "{} at line {} column {}" to work
 // around erased-serde round-tripping the error through de::Error::custom.
+#[inline]
 fn make_error(mut msg: String) -> DataError {
     let (line, column) = parse_line_col(&mut msg).unwrap_or((0, 0));
     DataError::Str(format!("{} line:{} column:{}",msg,line,column))
 }
 
-
+#[inline]
 fn parse_line_col(msg: &mut String) -> Option<(usize, usize)> {
     let start_of_suffix = match msg.rfind(" at line ") {
         Some(index) => index,
@@ -82,6 +84,7 @@ fn parse_line_col(msg: &mut String) -> Option<(usize, usize)> {
     Some((line, column))
 }
 
+#[inline]
 fn starts_with_digit(slice: &str) -> bool {
     match slice.as_bytes().get(0) {
         None => false,

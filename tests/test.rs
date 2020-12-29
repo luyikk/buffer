@@ -2,8 +2,7 @@ use data_rw::{Data, ReadAs};
 use std::error::Error;
 use std::collections::{HashMap, BTreeMap};
 use bytes::{Buf};
-use serde::{Deserialize, Serialize, Deserializer};
-use serde::private::de::BytesDeserializer;
+use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 
 
@@ -345,14 +344,14 @@ pub fn test_serde_ser()->Result<(),Box<dyn Error>>{
     }
 
     #[derive(Deserialize,Serialize)]
-    pub struct  test{
+    pub struct  Test{
         a:String,
         b:i32
     }
 
 
     let mut data=Data::new();
-    data.serde_serialize(test{a:"123123".to_string(),b:3333})?;
+    data.serde_serialize(Test{a:"123123".to_string(),b:3333})?;
     println!("{:?}",data);
 
     Ok(())
@@ -408,26 +407,26 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
     }
     {
         let x=Some(100i32);
-        data.serde_serialize(x);
+        data.serde_serialize(x)?;
         assert_eq!(x, data.serde_deserialize::<Option<i32>>()?);
         let y:Option<i32>=None;
-        data.serde_serialize(y);
+        data.serde_serialize(y)?;
         assert_eq!(None, data.serde_deserialize::<Option<i32>>()?);
 
-        data.serde_serialize(());
+        data.serde_serialize(())?;
         assert_eq!((), data.serde_deserialize::<()>()?);
 
         #[derive(Deserialize,Serialize,Debug,PartialOrd, PartialEq)]
         struct Foo;
         let x=Foo;
-        data.serde_serialize(x);
+        data.serde_serialize(x)?;
         let y= data.serde_deserialize::<Foo>()?;
         assert_eq!(Foo,y);
 
         #[derive(Deserialize,Serialize,Debug,PartialOrd, PartialEq)]
         struct Foo2(u8);
         let x=Foo2(100);
-        data.serde_serialize(x);
+        data.serde_serialize(x)?;
         let y= data.serde_deserialize::<Foo2>()?;
         assert_eq!(Foo2(100),y)
 
@@ -435,14 +434,14 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
 
     {
         let a=(1,2,"123".to_string(),0.5f32);
-        data.serde_serialize(a.clone());
+        data.serde_serialize(a.clone())?;
         let b= data.serde_deserialize::<(i32,i32,String,f32)>()?;
         assert_eq!(a,b);
 
         #[derive(Deserialize,Serialize,Debug,PartialOrd, PartialEq,Clone)]
         struct Foo(i32,i32,String,f32);
         let a=Foo(1,2,"123".to_string(),0.5f32);
-        data.serde_serialize(a.clone());
+        data.serde_serialize(a.clone())?;
         let b= data.serde_deserialize::<Foo>()?;
         assert_eq!(a,b);
     }
@@ -451,7 +450,7 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
         map.insert("1".to_string(),1);
         map.insert("2".to_string(),2);
         map.insert("3".to_string(),3);
-        data.serde_serialize(map.clone());
+        data.serde_serialize(map.clone())?;
         let a= data.serde_deserialize::<BTreeMap<String,i32>>()?;
         assert_eq!(map,a);
 
@@ -459,7 +458,7 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
         bmap.insert("1".to_string(),1);
         bmap.insert("2".to_string(),2);
         bmap.insert("3".to_string(),3);
-        data.serde_serialize(bmap.clone());
+        data.serde_serialize(bmap.clone())?;
         let b= data.serde_deserialize::<BTreeMap<String,i32>>()?;
         assert_eq!(bmap,b);
     }
@@ -477,7 +476,7 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
             b:100
         };
 
-        data.serde_serialize(a.clone());
+        data.serde_serialize(a.clone())?;
         let b= data.serde_deserialize::<Rgb>()?;
         assert_eq!(a,b);
     }
@@ -488,11 +487,11 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
             U(String, u32, u32),
         }
 
-        data.serde_serialize(E::T(44,66));
+        data.serde_serialize(E::T(44,66))?;
         let b= data.serde_deserialize::<E>()?;
         assert_eq!(E::T(44,66),b);
 
-        data.serde_serialize(E::U("123123".to_string(),44,66));
+        data.serde_serialize(E::U("123123".to_string(),44,66))?;
         let b= data.serde_deserialize::<E>()?;
         assert_eq!(E::U("123123".to_string(),44,66),b);
     }
@@ -503,11 +502,11 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
             P { r: u8, g: u8, b: u8,a:u8}
         }
 
-        data.serde_serialize(E::S{r:255,g:244,b:105});
+        data.serde_serialize(E::S{r:255,g:244,b:105})?;
         let b= data.serde_deserialize::<E>()?;
         assert_eq!(E::S{r:255,g:244,b:105},b);
 
-        data.serde_serialize(E::P{r:255,g:244,b:105,a:11});
+        data.serde_serialize(E::P{r:255,g:244,b:105,a:11})?;
         let b= data.serde_deserialize::<E>()?;
         assert_eq!(E::P{r:255,g:244,b:105,a:11},b);
     }
@@ -537,7 +536,7 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
         };
 
         let mut data=Data::new();
-        data.serde_serialize(test.clone());
+        data.serde_serialize(test.clone())?;
         println!("{:?}",data);
         assert_eq!(test,data.serde_deserialize::<Foo>()?)
     }

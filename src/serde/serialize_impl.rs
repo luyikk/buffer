@@ -10,8 +10,8 @@ pub struct DataSerializeSeq<'a> {
 }
 
 impl<'a> DataSerializeSeq<'a>{
+    #[inline]
     pub fn new(data:&'a mut Data, len:Option<usize>)->DataSerializeSeq<'a>{
-
         if let Some(len)=len {
             data.write_to_le(&(len as u32));
             DataSerializeSeq {
@@ -33,7 +33,7 @@ impl<'a> DataSerializeSeq<'a>{
 impl<'a> ser::SerializeSeq for DataSerializeSeq<'a>{
     type Ok = ();
     type Error = DataError;
-
+    #[inline]
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         if self.write_mode==0 {
@@ -72,6 +72,7 @@ pub struct DataSerializeTuple<'a>{
 }
 
 impl<'a> DataSerializeTuple<'a>{
+    #[inline]
     pub fn new(data:&'a mut Data, len:usize)->DataSerializeTuple<'_>{
         data.write_to_le(&(len as u32));
         DataSerializeTuple{
@@ -83,12 +84,12 @@ impl<'a> DataSerializeTuple<'a>{
 impl<'a> ser::SerializeTuple for DataSerializeTuple<'a>{
     type Ok = ();
     type Error =DataError;
-
+    #[inline]
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         value.serialize( &mut *self.data)
     }
-
+    #[inline]
     fn end(self) -> Result<Self::Ok, Self::Error> {
        Ok(())
     }
@@ -99,6 +100,7 @@ pub struct DataSerializeTupleStruct<'a>{
 }
 
 impl<'a> DataSerializeTupleStruct<'a>{
+    #[inline]
     pub fn new(data:&'a mut Data, len:usize)->DataSerializeTupleStruct<'a>{
         data.write_to_le(&(len as u32));
         DataSerializeTupleStruct{
@@ -110,12 +112,12 @@ impl<'a> DataSerializeTupleStruct<'a>{
 impl<'a> ser::SerializeTupleStruct for DataSerializeTupleStruct<'a>{
     type Ok = ();
     type Error =DataError;
-
+    #[inline]
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         value.serialize( &mut *self.data)
     }
-
+    #[inline]
     fn end(self) -> Result<Self::Ok, Self::Error> {
         Ok(())
     }
@@ -124,13 +126,13 @@ impl<'a> ser::SerializeTupleStruct for DataSerializeTupleStruct<'a>{
 impl<'a> ser::SerializeStruct for DataSerializeTupleStruct<'a>{
     type Ok = ();
     type Error =DataError;
-
+    #[inline]
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         self.data.write_to_le(&key);
         value.serialize( &mut *self.data)
     }
-
+    #[inline]
     fn end(self) -> Result<Self::Ok, Self::Error> {
         Ok(())
     }
@@ -142,6 +144,7 @@ pub struct  DataSerializeTupleVariant<'a> {
 }
 
 impl<'a> DataSerializeTupleVariant<'a>{
+    #[inline]
     pub fn new(data:&'a mut Data, variant:&'static str, len:usize)->DataSerializeTupleVariant<'a>{
         data.write_to_le(&variant);
         data.write_to_le(&(len as u32));
@@ -154,12 +157,12 @@ impl<'a> DataSerializeTupleVariant<'a>{
 impl<'a> ser::SerializeTupleVariant for DataSerializeTupleVariant<'a>{
     type Ok = ();
     type Error = DataError;
-
+    #[inline]
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         value.serialize(&mut *self.data)
     }
-
+    #[inline]
     fn end(self) -> Result<Self::Ok, Self::Error> {
         Ok(())
     }
@@ -168,13 +171,13 @@ impl<'a> ser::SerializeTupleVariant for DataSerializeTupleVariant<'a>{
 impl <'a> ser::SerializeStructVariant for DataSerializeTupleVariant<'a>{
     type Ok = ();
     type Error = DataError;
-
+    #[inline]
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         self.data.write_to_le(&key);
         value.serialize( &mut *self.data)
     }
-
+    #[inline]
     fn end(self) -> Result<Self::Ok, Self::Error> {
         Ok(())
     }
@@ -188,6 +191,7 @@ pub struct DataSerializeMap<'a>{
 }
 
 impl <'a> DataSerializeMap<'a>{
+    #[inline]
     pub fn new(data:&'a mut Data, len:Option<usize>)->DataSerializeMap<'a>{
         if let Some(len)=len {
             data.write_to_le(&(len as u32));
@@ -212,7 +216,7 @@ impl <'a> DataSerializeMap<'a>{
 impl <'a> ser::SerializeMap for DataSerializeMap<'a>{
     type Ok = ();
     type Error = DataError;
-
+    #[inline]
     fn serialize_key<T: ?Sized>(&mut self, key: &T) -> Result<(), Self::Error> where
         T: Serialize {
         if self.write_mode==0 {
@@ -227,7 +231,7 @@ impl <'a> ser::SerializeMap for DataSerializeMap<'a>{
             Ok(())
         }
     }
-
+    #[inline]
     fn serialize_value<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         if self.write_mode==0 {
@@ -242,7 +246,7 @@ impl <'a> ser::SerializeMap for DataSerializeMap<'a>{
             Ok(())
         }
     }
-
+    #[inline]
     fn end(mut self) -> Result<Self::Ok, Self::Error> {
         if self.write_mode==0 {
             Ok(())
