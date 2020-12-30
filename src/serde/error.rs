@@ -19,13 +19,13 @@ impl Display for DataError{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             DataError::Io(err)=>{
-                write!(f, "DataError IO:{}",err )
+                Display::fmt(err,f)
             },
             DataError::Str(err)=>{
                 write!(f, "DataError Str:{}",err )
             },
             DataError::Other(err)=>{
-                write!(f, "DataError Other:{}",err )
+                Display::fmt(err,f)
             }
         }
     }
