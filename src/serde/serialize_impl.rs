@@ -5,7 +5,7 @@ use crate::serde::error::DataError;
 
 pub struct DataSerializeSeq<'a> {
     write_mode:u8,
-    write_data:Option<Vec<Data>>,
+    write_data:Option<Data>,
     data:&'a mut Data,
 }
 
@@ -23,7 +23,7 @@ impl<'a> DataSerializeSeq<'a>{
         else{
             DataSerializeSeq {
                 write_mode:1u8,
-                write_data:Some(Vec::new()),
+                write_data:Some(Data::new()),
                 data
             }
         }
@@ -41,23 +41,20 @@ impl<'a> ser::SerializeSeq for DataSerializeSeq<'a>{
         }
         else{
             if let Some(ref mut table)= self.write_data{
-                let mut data=Data::new();
-                value.serialize(&mut data)?;
-                table.push(data);
+                value.serialize(table)?;
             }
             Ok(())
         }
     }
 
-    fn end(mut self) -> Result<Self::Ok, Self::Error> {
+    fn end(self) -> Result<Self::Ok, Self::Error> {
         if self.write_mode==0 {
             Ok(())
         }else{
-            if let Some(ref mut table)= self.write_data {
+            if let Some(ref table)= self.write_data {
                 self.data.write_to_le(&(table.len() as u32));
-                for v in table {
-                    self.data.write(v);
-                }
+                self.data.write(table);
+
             }
             Ok(())
         }
