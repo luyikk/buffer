@@ -74,6 +74,13 @@ impl Into<Vec<u8>> for Data{
     }
 }
 
+impl Into<String> for Data{
+    fn into(self) -> String {
+        unsafe {
+            String::from_utf8_unchecked(self.buf)
+        }
+    }
+}
 
 impl <K:Reader+Eq+Hash,V:Reader> Into<HashMap<K,V>> for Data{
     #[inline]
