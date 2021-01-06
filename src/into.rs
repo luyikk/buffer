@@ -76,9 +76,7 @@ impl Into<Vec<u8>> for Data{
 
 impl Into<String> for Data{
     fn into(self) -> String {
-        unsafe {
-            String::from_utf8_unchecked(self.buf)
-        }
+        String::from_utf8_lossy(&self.buf).into()
     }
 }
 
