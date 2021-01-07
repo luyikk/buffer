@@ -543,3 +543,21 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
 
     Ok(())
 }
+
+#[test]
+pub fn test_make()->Result<(),Box<dyn Error>>{
+
+    let mut data=Data::new();
+    data.write_to_le(&"123333");
+    data.set_position(0);
+
+    let len=data.len() +4;
+    let mut buff=Data::with_capacity(len);
+    buff.write_to_le(&(len as u32));
+    buff.write(&data);
+
+
+    println!("{:?}",buff);
+    Ok(())
+
+}

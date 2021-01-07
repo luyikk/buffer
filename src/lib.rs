@@ -1,4 +1,4 @@
-#![feature(optin_builtin_traits,negative_impls)]
+#![feature(auto_traits,negative_impls)]
 
 mod wr;
 mod into;
