@@ -93,18 +93,17 @@ fn starts_with_digit(slice: &str) -> bool {
     }
 }
 
+impl From<io::Error> for DataError{
+    #[cold]
+    fn from(err: io::Error) -> Self {
+        DataError::Io(err)
+    }
+}
 
 impl serde::ser::Error for DataError{
     #[cold]
     fn custom<T>(msg: T) -> Self where T: Display {
         make_error(msg.to_string())
-    }
-}
-
-impl From<io::Error> for DataError{
-    #[cold]
-    fn from(err: io::Error) -> Self {
-        DataError::Io(err)
     }
 }
 
