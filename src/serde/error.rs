@@ -7,7 +7,7 @@ use std::str::FromStr;
 
 
 #[derive(Debug)]
-pub enum  DataError{
+pub enum DataError{
     Io(io::Error),
     Str(String),
     Other(Box<dyn Error>)
@@ -32,6 +32,7 @@ impl Display for DataError{
 }
 
 impl Error for DataError{}
+
 
 // Parse our own error message that looks like "{} at line {} column {}" to work
 // around erased-serde round-tripping the error through de::Error::custom.
