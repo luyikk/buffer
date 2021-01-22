@@ -168,7 +168,6 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str], visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
-
         let value=visitor.visit_enum(VariantAccess::new(self)?);
         match value {
             Ok(value)=>Ok(value),

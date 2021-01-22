@@ -486,9 +486,9 @@ pub fn test_serde_de()->Result<(),Box<dyn Error>>{
             T(u8, u8),
             U(String, u32, u32),
         }
-
-        data.serde_serialize(E::T(44,66))?;
-        let b= data.serde_deserialize::<E>()?;
+        let mut xdata=Data::new();
+        xdata.serde_serialize(E::T(44,66))?;
+        let b= xdata.serde_deserialize::<E>()?;
         assert_eq!(E::T(44,66),b);
 
         data.serde_serialize(E::U("123123".to_string(),44,66))?;
@@ -556,8 +556,37 @@ pub fn test_make()->Result<(),Box<dyn Error>>{
     buff.write_to_le(&(len as u32));
     buff.write(&data);
 
-
     println!("{:?}",buff);
     Ok(())
 
+}
+
+#[test]
+pub fn test_struct_2()->Result<(),Box<dyn Error>>{
+    #[derive(Serialize,Deserialize,PartialOrd, PartialEq,Debug)]
+    pub enum Flag{
+        Message(String),
+        Int(i32)
+    }
+
+    #[derive(Serialize,Deserialize,PartialOrd, PartialEq,Debug)]
+    pub struct LogOnResult{
+        pub success:bool,
+        pub msg:Flag
+    }
+
+    let mut data=Data::new();
+    data.serde_serialize(LogOnResult{
+        success: true,
+        msg: Flag::Message("LogOn Ok".into())
+    })?;
+
+    let res= data.serde_deserialize::<LogOnResult>()?;
+
+    assert_eq!(res,LogOnResult{
+        success: true,
+        msg: Flag::Message("LogOn Ok".into())
+    });
+
+    Ok(())
 }

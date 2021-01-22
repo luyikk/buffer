@@ -117,12 +117,14 @@ impl<'a> Serializer for &'a mut Data{
         T: Serialize {
         value.serialize(self)
     }
+
     #[inline]
-    fn serialize_newtype_variant<T: ?Sized>(self, _name: &'static str, variant_index: u32, _variant: &'static str, value: &T) -> Result<Self::Ok, Self::Error> where
+    fn serialize_newtype_variant<T: ?Sized>(self, _name: &'static str, _variant_index: u32, variant: &'static str, value: &T) -> Result<Self::Ok, Self::Error> where
         T: Serialize {
-        self.write_to_le(&variant_index);
+        self.write_to_le(&variant);
         value.serialize(self)
     }
+
     #[inline]
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
         Ok(DataSerializeSeq::new(self,len))
