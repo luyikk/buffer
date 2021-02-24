@@ -5,6 +5,7 @@ mod into;
 mod readfrom;
 mod todata;
 mod serde;
+pub mod msgpack;
 
 use bytes::buf::UninitSlice;
 use bytes::{Buf, BufMut};

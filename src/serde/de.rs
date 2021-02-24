@@ -3,10 +3,11 @@ use crate::Data;
 use serde::de::{Visitor, DeserializeSeed};
 use crate::serde::error::DataError;
 use paste::paste;
+use std::str;
 
 impl Data{
     #[inline]
-    pub fn serde_deserialize<'a,T:Deserialize<'a>>(&'a mut self)->Result<T,DataError>{
+    pub fn serde_deserialize<'a,'de,T:Deserialize<'a>>(&'de mut self)->Result<T,DataError>{
         T::deserialize(self)
     }
 }
@@ -63,12 +64,20 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
         else {
             let bak = self.offset;
             self.offset += len;
-            let str=String::from_utf8_lossy(&self[bak..self.offset]);
-            let value = visitor.visit_str (&str);
-            match value {
-                Ok(value) => Ok(value),
-                Err(err) => Err(err)
+            match str::from_utf8(&self[bak..self.offset]){
+                Ok(str)=>{
+                    let value = visitor.visit_str(str);
+                    match value {
+                        Ok(value) => Ok(value),
+                        Err(err) => Err(err)
+                    }
+                },
+                Err(err)=>{
+                   Err(Self::Error::Other(err.into()))
+                }
             }
+
+
         }
     }
     #[inline]

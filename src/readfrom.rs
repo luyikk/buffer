@@ -99,7 +99,6 @@ impl ReadFrom for Data{
     }
 }
 
-
 pub trait ReadAs<T>{
     fn read_as(&mut self)->io::Result<T>;
 }
