@@ -716,5 +716,15 @@ pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
     let test2:(i32,i32,i32,String)=data.msgpack_deserialize()?;
     assert_eq!(test2,(1,2,3,"123123".to_string()));
 
+    #[derive(Serialize,Deserialize,PartialOrd, PartialEq,Debug)]
+    pub struct LogOn{
+        pub username:String,
+        pub password:String
+    }
+
+    let test=LogOn{ username:"123".into(),password:"321".into()};
+    data.msgpack_serialize(test)?;
+    let test:LogOn=data.msgpack_deserialize()?;
+    assert_eq!(test,LogOn{ username:"123".into(),password:"321".into()});
     Ok(())
 }

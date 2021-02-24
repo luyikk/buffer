@@ -59,7 +59,7 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
         V: Visitor<'de> {
         let len= self.get_le::<u32>()? as usize;
         if self.offset+len >self.len(){
-            return Err(DataError::Str("deserialize_bytes:offset + len > max len".into()))
+            return Err(DataError::Str("deserialize_str:offset + len > max len".into()))
         }
         else {
             let bak = self.offset;
