@@ -8,9 +8,11 @@ use std::str::FromStr;
 pub enum DataError{
     Io(io::Error),
     Str(String),
-    Other(Box<dyn Error>)
+    Other(Box<dyn Error+Sync+Send+'static>)
 }
 
+unsafe  impl  Send for DataError{}
+unsafe  impl  Sync for DataError{}
 
 impl Display for DataError{
     #[inline]
