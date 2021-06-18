@@ -1,6 +1,6 @@
 use crate::Data;
 use serde::{Serialize, Deserialize};
-use std::any::{TypeId, Any};
+use std::any::TypeId;
 use anyhow::*;
 
 impl Data{
@@ -35,7 +35,7 @@ impl Data{
             Ok(self.serde_deserialize()?)
         } else if typeid == TypeId::of::<f32>() {
             Ok(self.serde_deserialize()?)
-        } else if typeid == TypeId::of::<f32>() {
+        } else if typeid == TypeId::of::<f64>() {
             Ok(self.serde_deserialize()?)
         } else if typeid == TypeId::of::<Vec<u8>>() {
             Ok(self.serde_deserialize()?)
@@ -55,8 +55,8 @@ impl Data{
         }
     }
 
-    pub fn msgpack_serialize<T:Serialize+'static>(&mut self,value:T)->Result<()>{
-        let typeid =value.type_id();
+    pub fn msgpack_serialize<T:Serialize+'static>(&mut self,value:&T)->Result<()>{
+        let typeid =TypeId::of::<T>();
         if typeid == TypeId::of::<bool>() {
             self.serde_serialize(value)?;
         } else if typeid == TypeId::of::<i8>() {
@@ -77,7 +77,7 @@ impl Data{
             self.serde_serialize(value)?;
         } else if typeid == TypeId::of::<f32>() {
             self.serde_serialize(value)?;
-        } else if typeid == TypeId::of::<f32>() {
+        } else if typeid == TypeId::of::<f64>() {
             self.serde_serialize(value)?;
         } else if typeid == TypeId::of::<Vec<u8>>() {
             self.serde_serialize(value)?;
