@@ -55,7 +55,7 @@ impl Data{
         }
     }
 
-    pub fn msgpack_serialize<T:Serialize+'static>(&mut self,value:&T)->Result<()>{
+    pub fn msgpack_serialize<T:Serialize+'static>(&mut self,value:T)->Result<()>{
         let typeid =TypeId::of::<T>();
         if typeid == TypeId::of::<bool>() {
             self.serde_serialize(value)?;
