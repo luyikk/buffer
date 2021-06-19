@@ -595,61 +595,61 @@ pub fn test_struct_2()->Result<(),Box<dyn Error>>{
 #[test]
 pub fn test_msgpack_to_from()->Result<(),Box<dyn Error>>{
 
-    let mut data = Data::msgpack_from(67i8)?;
-    let v:i8=data.msgpack_to()?;
+    let mut data = Data::pack_from(67i8)?;
+    let v:i8=data.pack_to()?;
     assert_eq!(v,67i8);
 
-    let mut data = Data::msgpack_from(66u8)?;
-    let v:u8=data.msgpack_to()?;
+    let mut data = Data::pack_from(66u8)?;
+    let v:u8=data.pack_to()?;
     assert_eq!(v,66u8);
 
-    let mut data = Data::msgpack_from(67i16)?;
-    let v:i16=data.msgpack_to()?;
+    let mut data = Data::pack_from(67i16)?;
+    let v:i16=data.pack_to()?;
     assert_eq!(v,67i16);
 
-    let mut data = Data::msgpack_from(66u16)?;
-    let v:u16=data.msgpack_to()?;
+    let mut data = Data::pack_from(66u16)?;
+    let v:u16=data.pack_to()?;
     assert_eq!(v,66u16);
 
-    let mut data = Data::msgpack_from(67i32)?;
-    let v:i32=data.msgpack_to()?;
+    let mut data = Data::pack_from(67i32)?;
+    let v:i32=data.pack_to()?;
     assert_eq!(v,67i32);
 
-    let mut data = Data::msgpack_from(66u32)?;
-    let v:u32=data.msgpack_to()?;
+    let mut data = Data::pack_from(66u32)?;
+    let v:u32=data.pack_to()?;
     assert_eq!(v,66u32);
 
-    let mut data = Data::msgpack_from(67i64)?;
-    let v:i64=data.msgpack_to()?;
+    let mut data = Data::pack_from(67i64)?;
+    let v:i64=data.pack_to()?;
     assert_eq!(v,67i64);
 
-    let mut data = Data::msgpack_from(66u64)?;
-    let v:u64=data.msgpack_to()?;
+    let mut data = Data::pack_from(66u64)?;
+    let v:u64=data.pack_to()?;
     assert_eq!(v,66u64);
 
-    let mut data = Data::msgpack_from("123123")?;
-    let v:&str=data.msgpack_to()?;
+    let mut data = Data::pack_from("123123")?;
+    let v:&str=data.pack_to()?;
     assert_eq!(v,"123123");
 
     let test=vec![1u8,2u8,3u8];
-    let mut data = Data::msgpack_from(test)?;
-    let test:Vec<u8>=data.msgpack_to()?;
+    let mut data = Data::pack_from(test)?;
+    let test:Vec<u8>=data.pack_to()?;
     assert_eq!(test,vec![1u8,2u8,3u8]);
 
     let test=vec![vec![1u8,2u8,3u8],vec![1u8,2u8,3u8]];
-    let mut data = Data::msgpack_from(test)?;
-    let test:Vec<Vec<u8>>=data.msgpack_to()?;
+    let mut data = Data::pack_from(test)?;
+    let test:Vec<Vec<u8>>=data.pack_to()?;
     assert_eq!(test,vec![vec![1u8,2u8,3u8],vec![1u8,2u8,3u8]]);
 
     let mut test =HashMap::new();
     test.insert(1,2);
-    let mut data = Data::msgpack_from(test.clone())?;
-    let test2:HashMap<i32,i32>=data.msgpack_to()?;
+    let mut data = Data::pack_from(test.clone())?;
+    let test2:HashMap<i32,i32>=data.pack_to()?;
     assert_eq!(test,test2);
 
     let mut test=(1,2,3,"123123");
-    let mut data = Data::msgpack_from(test)?;
-    test=data.msgpack_to()?;
+    let mut data = Data::pack_from(test)?;
+    test=data.pack_to()?;
     assert_eq!(test,(1,2,3,"123123"));
 
     Ok(())
@@ -659,69 +659,74 @@ pub fn test_msgpack_to_from()->Result<(),Box<dyn Error>>{
 pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
 
     let mut data =  Data::new();
-    data.msgpack_serialize(67i8)?;
-    let v:i8=data.msgpack_deserialize()?;
+    data.pack_serialize(67i8)?;
+    let v:i8=data.pack_deserialize()?;
     assert_eq!(v,67i8);
 
-    data.msgpack_serialize(66u8)?;
-    let v:u8=data.msgpack_deserialize()?;
+    data.pack_serialize(66u8)?;
+    let v:u8=data.pack_deserialize()?;
     assert_eq!(v,66u8);
 
-    data.msgpack_serialize(67i16)?;
-    let v:i16=data.msgpack_deserialize()?;
+    data.pack_serialize(67i16)?;
+    let v:i16=data.pack_deserialize()?;
     assert_eq!(v,67i16);
 
-    data.msgpack_serialize(66u16)?;
-    let v:u16=data.msgpack_deserialize()?;
+    data.pack_serialize(66u16)?;
+    let v:u16=data.pack_deserialize()?;
     assert_eq!(v,66u16);
 
-    data.msgpack_serialize(67i32)?;
-    let v:i32=data.msgpack_deserialize()?;
+    data.pack_serialize(67i32)?;
+    let v:i32=data.pack_deserialize()?;
     assert_eq!(v,67i32);
 
-    data.msgpack_serialize(66u32)?;
-    let v:u32=data.msgpack_deserialize()?;
+    data.pack_serialize(66u32)?;
+    let v:u32=data.pack_deserialize()?;
     assert_eq!(v,66u32);
 
-    data.msgpack_serialize(67i64)?;
-    let v:i64=data.msgpack_deserialize()?;
+    data.pack_serialize(67i64)?;
+    let v:i64=data.pack_deserialize()?;
     assert_eq!(v,67i64);
 
-    data.msgpack_serialize(66u64)?;
-    let v:u64=data.msgpack_deserialize()?;
+    data.pack_serialize(66u64)?;
+    let v:u64=data.pack_deserialize()?;
     assert_eq!(v,66u64);
 
-    data.msgpack_serialize(66.1111f32)?;
-    let v:f32=data.msgpack_deserialize()?;
+    data.pack_serialize(66.1111f32)?;
+    let v:f32=data.pack_deserialize()?;
     assert_eq!(v,66.1111f32);
 
-    data.msgpack_serialize(66.11112222f64)?;
-    let v:f64=data.msgpack_deserialize()?;
+    data.pack_serialize(66.11112222f64)?;
+    let v:f64=data.pack_deserialize()?;
     assert_eq!(v,66.11112222f64);
 
-    data.msgpack_serialize("123123")?;
-    let v:String=data.msgpack_deserialize()?;
+    data.pack_serialize("123123")?;
+    let v:String=data.pack_deserialize()?;
     assert_eq!(v,"123123");
 
+
+    data.pack_serialize(Some(66.11112222f64))?;
+    let v:Option<f64>=data.pack_deserialize()?;
+    assert_eq!(v,Some(66.11112222f64));
+
     let test=vec![1u8,2u8,3u8];
-    data.msgpack_serialize(test)?;
-    let test:Vec<u8>=data.msgpack_deserialize()?;
+    data.pack_serialize(test)?;
+    let test:Vec<u8>=data.pack_deserialize()?;
     assert_eq!(test,vec![1u8,2u8,3u8]);
 
     let test=vec![vec![1u8,2u8,3u8],vec![1u8,2u8,3u8]];
-    data.msgpack_serialize(test)?;
-    let test:Vec<Vec<u8>>=data.msgpack_deserialize()?;
+    data.pack_serialize(test)?;
+    let test:Vec<Vec<u8>>=data.pack_deserialize()?;
     assert_eq!(test,vec![vec![1u8,2u8,3u8],vec![1u8,2u8,3u8]]);
 
     let mut test =HashMap::new();
     test.insert(1,2);
-    data.msgpack_serialize(test.clone())?;
-    let test2:HashMap<i32,i32>=data.msgpack_deserialize()?;
+    data.pack_serialize(test.clone())?;
+    let test2:HashMap<i32,i32>=data.pack_deserialize()?;
     assert_eq!(test,test2);
 
     let test=(1,2,3,"123123");
-    data.msgpack_serialize(test)?;
-    let test2:(i32,i32,i32,String)=data.msgpack_deserialize()?;
+    data.pack_serialize(test)?;
+    let test2:(i32,i32,i32,String)=data.pack_deserialize()?;
     assert_eq!(test2,(1,2,3,"123123".to_string()));
 
     #[derive(Serialize,Deserialize,PartialOrd, PartialEq,Debug)]
@@ -731,8 +736,8 @@ pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
     }
 
     let test=LogOn{ username:"123".into(),password:"321".into()};
-    data.msgpack_serialize(test)?;
-    let test:LogOn=data.msgpack_deserialize()?;
+    data.pack_serialize(test)?;
+    let test:LogOn=data.pack_deserialize()?;
     assert_eq!(test,LogOn{ username:"123".into(),password:"321".into()});
     Ok(())
 }
