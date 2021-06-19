@@ -594,6 +594,43 @@ pub fn test_struct_2()->Result<(),Box<dyn Error>>{
 
 #[test]
 pub fn test_msgpack_to_from()->Result<(),Box<dyn Error>>{
+    {
+        let mut data = Data::pack_from::<(bool, &str, i32, Option<String>)>((true, "ok", 1, None))?;
+        assert_eq!((true, "ok", 1, None), data.pack_to::<(bool, &str, i32, Option<String>)>()?);
+    }
+    {
+        #[derive(Serialize, Deserialize, Eq, PartialEq, Debug)]
+        struct Foo {
+            name: String,
+            arg: i32
+        }
+
+        let mut data = Data::pack_from(Foo {
+            name: "1".to_string(),
+            arg: 2
+        })?;
+        println!("{:?}", data);
+        assert_eq!(Foo {
+            name: "1".to_string(),
+            arg: 2
+        }, data.pack_to()?);
+    }
+
+    #[derive(Serialize, Deserialize, PartialOrd, PartialEq, Debug)]
+    pub struct LogOnResult {
+        #[serde(rename = "Success")]
+        pub success: bool,
+        #[serde(rename = "Msg")]
+        pub msg: String,
+    }
+
+    let mut data = Data::pack_from(LogOnResult{
+        success:true,
+        msg:"1 ok".to_string()
+    })?;
+
+    println!("{:?}",data);
+
 
     let mut data = Data::pack_from(67i8)?;
     let v:i8=data.pack_to()?;
