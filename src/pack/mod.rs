@@ -25,7 +25,7 @@ impl Data{
     #[cfg(all(feature = "rmp",feature = "json"))]
     pub fn pack_serialize<T:Serialize>(&mut self, value:T) ->Result<()> {
         let buff = rmp_serde::encode::to_vec(&value)?;
-        self.serde_serialize(buff)?;
+        self.write_buff_fixed_le(&buff);
         Ok(())
     }
 
@@ -52,7 +52,7 @@ impl Data{
     #[cfg(all(feature = "json",not(feature = "rmp")))]
     pub fn pack_serialize<T:Serialize>(&mut self, value:T) ->Result<()> {
         let buff = serde_json::to_vec(&value)?;
-        self.serde_serialize(buff)?;
+        self.write_buff_fixed_le(&buff);
         Ok(())
     }
 
