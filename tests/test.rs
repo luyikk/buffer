@@ -624,7 +624,7 @@ pub fn test_msgpack_to_from()->Result<(),Box<dyn Error>>{
         pub msg: String,
     }
 
-    let mut data = Data::pack_from(LogOnResult{
+    let data = Data::pack_from(LogOnResult{
         success:true,
         msg:"1 ok".to_string()
     })?;
