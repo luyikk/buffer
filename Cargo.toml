@@ -12,7 +12,7 @@ description = "io buffer write reader."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default=["json"]
+default=["rmp"]
 rmp=["rmp-serde"]
 json=["serde_json"]
 
