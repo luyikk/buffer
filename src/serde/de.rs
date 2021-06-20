@@ -57,6 +57,9 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_str<V>(self, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
         let len= self.get_le::<u32>()? as usize;
         if self.offset+len >self.len(){
             return Err(DataError::Str("deserialize_str:offset + len > max len".into()))
@@ -227,7 +230,6 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
         if self.mode==1{
             return Err(DataError::Str("reset".to_string()));
         }
-
         self.deserialize_str(visitor)
     }
     #[inline]
