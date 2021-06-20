@@ -78,28 +78,28 @@ impl<'a> Serializer for &'a mut Data{
     }
     #[inline]
     fn serialize_str(self, v: &str) -> Result<Self::Ok, Self::Error> {
-        if self.mode==1{
-            return Err(DataError::Str("rollback".to_string()));
-        }
         self.write_to_le(&v);
         Ok(())
     }
     #[inline]
     fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok, Self::Error> {
-        if self.mode==1{
-            return Err(DataError::Str("rollback".to_string()));
-        }
         self.write_to_le(&v);
         Ok(())
     }
     #[inline]
     fn serialize_none(self) -> Result<Self::Ok, Self::Error> {
+        if self.mode==1{
+            return Err(DataError::Str("rollback".to_string()));
+        }
         self.write_to_le(&0u8);
         Ok(())
     }
     #[inline]
     fn serialize_some<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error> where
         T: Serialize {
+        if self.mode==1{
+            return Err(DataError::Str("rollback".to_string()));
+        }
         self.write_to_le(&1u8);
         value.serialize(self)
     }
@@ -198,9 +198,6 @@ impl<'a> Serializer for &'a mut Data{
     #[inline]
     fn collect_str<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error> where
         T: Display {
-        if self.mode==1{
-            return Err(DataError::Str("rollback".to_string()));
-        }
         self.write_to_le(&format!("{}",value));
         Ok(())
     }
