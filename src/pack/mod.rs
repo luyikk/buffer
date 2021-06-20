@@ -58,8 +58,12 @@ impl Data{
         self.mode=1;
         let bak_offset=self.offset;
         match self.serde_deserialize(){
-            Ok(value)=>Ok(value),
+            Ok(value)=>{
+                self.mode=0;
+                Ok(value)
+            },
             Err(_)=>{
+                self.mode=0;
                 self.set_position(bak_offset);
                 let len = self.get_le::<u32>()? as usize;
                 let start = self.offset;
@@ -80,6 +84,7 @@ impl Data{
             let buff = serde_json::to_vec(&value)?;
             self.write_buff_fixed_le(&buff);
         }
+        self.mode=0;
         Ok(())
     }
 }
