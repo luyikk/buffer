@@ -1,4 +1,5 @@
-#![feature(auto_traits,negative_impls)]
+#![feature(auto_traits,negative_impls,layout_for_ptr)]
+
 
 mod wr;
 mod into;
@@ -21,7 +22,8 @@ pub use todata::*;
 #[derive(Debug,Clone)]
 pub struct Data {
     buf: Vec<u8>,
-    offset: usize
+    offset: usize,
+    mode:u8
 }
 
 unsafe impl BufMut for Data {
@@ -73,7 +75,8 @@ impl Default for Data {
     fn default() -> Self {
         Data {
             buf: Vec::new(),
-            offset: 0
+            offset: 0,
+            mode:0
         }
     }
 }
@@ -96,7 +99,8 @@ impl From<Vec<u8>> for Data{
     fn from(data: Vec<u8>) -> Self {
         Data {
             buf: data,
-            offset: 0
+            offset: 0,
+            mode:0
         }
     }
 }
@@ -111,7 +115,8 @@ impl Data {
     pub fn with_capacity(cap: usize) -> Data {
         Data {
             buf: Vec::with_capacity(cap),
-            offset: 0
+            offset: 0,
+            mode:0
         }
     }
 
@@ -119,7 +124,8 @@ impl Data {
     pub fn with_len(len:usize,default:u8)->Data{
         Data {
             buf: vec![default;len],
-            offset: 0
+            offset: 0,
+            mode:0
         }
     }
 

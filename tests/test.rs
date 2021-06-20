@@ -740,6 +740,9 @@ pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
     let v:String=data.pack_deserialize()?;
     assert_eq!(v,"123123");
 
+    data.pack_serialize(Some("123123".to_string()))?;
+    let v:Option<String>=data.pack_deserialize()?;
+    assert_eq!(v,Some("123123".to_string()));
 
     data.pack_serialize(Some(66.11112222f64))?;
     let v:Option<f64>=data.pack_deserialize()?;
@@ -757,9 +760,9 @@ pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
 
     let mut test =HashMap::new();
     test.insert(1,2);
-    data.pack_serialize(test.clone())?;
-    let test2:HashMap<i32,i32>=data.pack_deserialize()?;
-    assert_eq!(test,test2);
+    data.pack_serialize(Some(test.clone()))?;
+    let test2:Option<HashMap<i32,i32>>=data.pack_deserialize()?;
+    assert_eq!(Some(test),test2);
 
     let test=(1,2,3,"123123");
     data.pack_serialize(test)?;
@@ -776,5 +779,6 @@ pub fn test_msgpack_serde()->Result<(),Box<dyn Error>>{
     data.pack_serialize(test)?;
     let test:LogOn=data.pack_deserialize()?;
     assert_eq!(test,LogOn{ username:"123".into(),password:"321".into()});
+
     Ok(())
 }

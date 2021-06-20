@@ -120,6 +120,11 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_unit<V>(self, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         if self.get_le::<u8>()?==1{
             visitor.visit_unit()
         }
@@ -130,16 +135,25 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_unit_struct<V>(self, _name: &'static str, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         self.deserialize_unit(visitor)
     }
     #[inline]
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         visitor.visit_newtype_struct(self)
     }
     #[inline]
     fn deserialize_seq<V>(self, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+
         let value=visitor.visit_seq(SeqAssess::new(self)?);
         match value {
             Ok(value)=>Ok(value),
@@ -149,16 +163,27 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         self.deserialize_seq(visitor)
     }
     #[inline]
     fn deserialize_tuple_struct<V>(self, _name: &'static str, _len: usize, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
         self.deserialize_seq(visitor)
     }
     #[inline]
     fn deserialize_map<V>(self, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         let value=visitor.visit_map(MapAccess::new(self)?);
         match value {
             Ok(value)=>Ok(value),
@@ -168,6 +193,9 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_struct<V>(self, _name: &'static str, _fields: &'static [&'static str], visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
         let value=visitor.visit_map(MapAccess::new(self)?);
         match value {
             Ok(value)=>Ok(value),
@@ -177,6 +205,9 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str], visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
         let value=visitor.visit_enum(VariantAccess::new(self)?);
         match value {
             Ok(value)=>Ok(value),
@@ -186,12 +217,16 @@ impl<'de,'a> Deserializer<'de> for &'a mut Data{
     #[inline]
     fn deserialize_identifier<V>(self, visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
+        if self.mode==1{
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         self.deserialize_str(visitor)
     }
     #[inline]
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<<V as Visitor<'de>>::Value, Self::Error> where
         V: Visitor<'de> {
-        unimplemented!()
+        return Err(DataError::Str("reset".to_string()));
     }
 }
 
@@ -204,6 +239,10 @@ struct SeqAssess<'a>{
 impl <'a> SeqAssess<'a>{
     #[inline]
     pub fn new(data:&'a mut Data)->Result<Self,DataError>{
+        if data.mode==1 {
+            return Err(DataError::Str("reset".to_string()));
+        }
+
         let len=data.serde_deserialize::<u32>()?;
         Ok(SeqAssess{
             len,
@@ -218,7 +257,6 @@ impl<'a,'de> serde::de::SeqAccess<'de> for SeqAssess<'a>{
     #[inline]
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error> where
         T: DeserializeSeed<'de> {
-
         if self.current<self.len {
             let r = seed.deserialize(&mut *self.data)?;
             self.current+=1;

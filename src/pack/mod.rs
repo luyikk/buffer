@@ -15,17 +15,33 @@ impl Data{
 
     #[cfg(all(feature = "rmp",feature = "json"))]
     pub fn pack_deserialize<'a,T:Deserialize<'a>>(&'a mut self) ->Result<T> {
-        let len = self.get_le::<u32>()? as usize;
-        let start = self.offset;
-        if !self.set_position(start + len) {
-            bail!("index overflow {}", line!())
+        self.mode=1;
+        let bak_offset=self.offset;
+        match self.serde_deserialize(){
+            Ok(value)=>Ok(value),
+            Err(_)=>{
+                self.set_position(bak_offset);
+
+                let len = self.get_le::<u32>()? as usize;
+                let start = self.offset;
+                if !self.set_position(start + len) {
+                    bail!("index overflow {}", line!())
+                }
+                Ok(rmp_serde::decode::from_read_ref(&self[start..self.offset])?)
+            }
         }
-        Ok(rmp_serde::decode::from_read_ref(&self[start..self.offset])?)
+
+
     }
     #[cfg(all(feature = "rmp",feature = "json"))]
     pub fn pack_serialize<T:Serialize>(&mut self, value:T) ->Result<()> {
-        let buff = rmp_serde::encode::to_vec(&value)?;
-        self.write_buff_fixed_le(&buff);
+        self.mode=1;
+        let bak=self.len();
+        if self.serde_serialize(&value).is_err() {
+            self.buf.truncate(bak);
+            let buff = rmp_serde::encode::to_vec(&value)?;
+            self.write_buff_fixed_le(&buff);
+        }
         Ok(())
     }
 

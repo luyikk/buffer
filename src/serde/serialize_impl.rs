@@ -34,7 +34,7 @@ impl<'a> ser::SerializeSeq for DataSerializeSeq<'a>{
     type Ok = ();
     type Error = DataError;
     #[inline]
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
+     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error> where
         T: Serialize {
         if self.write_mode==0 {
             value.serialize(&mut *self.data)
