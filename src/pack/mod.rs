@@ -21,7 +21,6 @@ impl Data{
             Ok(value)=>Ok(value),
             Err(_)=>{
                 self.set_position(bak_offset);
-
                 let len = self.get_le::<u32>()? as usize;
                 let start = self.offset;
                 if !self.set_position(start + len) {
