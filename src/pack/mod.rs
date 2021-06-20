@@ -72,7 +72,7 @@ impl Data{
     }
 
     #[cfg(all(feature = "json",feature = "rmp"))]
-    pub fn pack_serialize<T:Serialize>(&mut self, value:T) ->Result<()> {     
+    pub fn pack_serialize<T:Serialize>(&mut self, value:T) ->Result<()> {
         self.mode=1;
         let bak=self.len();
         if self.serde_serialize(&value).is_err() {
