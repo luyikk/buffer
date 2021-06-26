@@ -1,4 +1,4 @@
-#Fast binary serialization read write,support Serde and Stream model
+# Fast binary serialization read write,support Serde and Stream model
 ## Similar to bincode, but beyond the performance of bincode
 ## Provide basic RW and var length Rw
 
