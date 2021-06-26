@@ -26,6 +26,13 @@ assert_eq!(123u64, rd.read_var_integer::<u64>()?);
 assert_eq!("hello world", rd.read_var_str()?);
 ```
 
+## Support features custom
+```toml
+[features]
+default=["rmp"]
+big_endian=[]
+check_utf8=[]
+```
 
 benchmark
 ```shell

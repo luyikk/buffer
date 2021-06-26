@@ -1,12 +1,12 @@
 [package]
 name = "data-rw"
-version = "1.5.0"
+version = "1.5.1"
 authors = ["luyi <luyikk@126.com>"]
 edition = "2018"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/luyikk/buffer"
-documentation = "https://docs.rs/buffer"
+documentation = "https://docs.rs/data-rw"
 description = "io buffer write reader."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
