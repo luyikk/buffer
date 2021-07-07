@@ -333,6 +333,11 @@ impl Data {
     }
 
     #[inline]
+    pub fn into_inner(self)->Vec<u8>{
+        self.buff
+    }
+
+    #[inline]
     pub fn write_buf(&mut self, buff: &[u8]) {
         unsafe {
             let size = buff.len();
