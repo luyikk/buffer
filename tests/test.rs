@@ -1,6 +1,14 @@
 use anyhow::*;
 use data_rw::{Data, DataReader};
 
+
+#[test]
+fn test_resize()->Result<()>{
+    let mut data=Data::with_capacity(128);
+    data.write_fixed(include_str!("./test.txt"));
+    Ok(())
+}
+
 #[test]
 fn test_write() -> Result<()> {
     let mut data = Data::new();
