@@ -381,7 +381,7 @@ impl Data {
     pub fn check_reserve(&mut self, size: usize) -> usize {
         let len = self.len();
         let mut cap= self.capacity();
-        if size > cap.wrapping_sub(len) {
+        if size.wrapping_add(len) > cap {
             while cap< len.wrapping_add(size){
                 cap*=2;
             }
