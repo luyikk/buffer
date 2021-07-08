@@ -382,7 +382,7 @@ impl Data {
         let len = self.len();
         let mut cap= self.capacity();
         if size > cap.wrapping_sub(len) {
-            while cap< len+size{
+            while cap< len.wrapping_add(size){
                 cap*=2;
             }
             self.reserve(cap);
