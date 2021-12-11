@@ -1,4 +1,4 @@
-use anyhow::*;
+use anyhow::Result;
 use data_rw::{Data, DataReader, DataOwnedReader};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

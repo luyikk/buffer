@@ -1,6 +1,6 @@
 use crate::serde::error::DataError;
 use crate::DataReader;
-use anyhow::*;
+use anyhow::{anyhow, Result};
 use paste::paste;
 use serde::de::{DeserializeSeed, Visitor};
 use serde::Deserializer;

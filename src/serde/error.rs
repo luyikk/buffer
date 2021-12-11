@@ -1,4 +1,4 @@
-use anyhow::*;
+use anyhow::anyhow;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]

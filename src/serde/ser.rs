@@ -4,7 +4,7 @@ use crate::serde::serialize_impl::{
     DataSerializeTupleVariant,
 };
 use crate::Data;
-use anyhow::*;
+use anyhow::Result;
 use serde::{Serialize, Serializer};
 use paste::paste;
 

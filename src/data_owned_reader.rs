@@ -1,5 +1,5 @@
 use crate::{DataReader, ReadNumberFixed, ReadNumberVar};
-use anyhow::*;
+use anyhow::{ensure, Result};
 use std::ops::Deref;
 
 #[derive(Debug)]

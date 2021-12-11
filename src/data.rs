@@ -1,4 +1,4 @@
-use anyhow::*;
+use anyhow::{ensure, Result};
 use auto_impl::auto_impl;
 use std::mem::size_of;
 use std::ops::{Deref, DerefMut};

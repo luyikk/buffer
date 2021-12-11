@@ -1,6 +1,6 @@
 use crate::{Data, DataReader};
 use serde::{Serialize, Deserialize};
-use anyhow::*;
+use anyhow::Result;
 use crate::data_owned_reader::DataOwnedReader;
 
 /// 这是为了兼容而写的,请不要随便使用

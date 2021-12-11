@@ -1,4 +1,4 @@
-use anyhow::*;
+use anyhow::Result;
 use data_rw::{Data, DataReader};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
