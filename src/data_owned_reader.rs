@@ -30,7 +30,7 @@ impl DataOwnedReader{
     pub fn get_all_reader(&self)->DataReader{
         DataReader::from(&self.inner[..])
     }
-    #[inline] #[inline]
+    #[inline]
     pub fn get_offset(&self)->usize{
         self.offset
     }

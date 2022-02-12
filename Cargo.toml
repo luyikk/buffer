@@ -1,6 +1,6 @@
 [package]
 name = "data-rw"
-version = "1.5.6"
+version = "1.6.0"
 authors = ["luyi <luyikk@126.com>"]
 edition = "2018"
 license = "MIT/Apache-2.0"
@@ -17,6 +17,7 @@ big_endian=[]
 check_utf8=[]
 rmp=["rmp-serde"]
 json=["serde_json"]
+data=[]
 
 
 [dependencies]
