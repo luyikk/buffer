@@ -8,7 +8,8 @@ pub enum DataError {
     Io(std::io::Error),
     RollBack,
     Reset,
-    AnyNotSupported
+    AnyNotSupported,
+    IgnoredAnyNotSupported
 }
 
 impl Display for DataError {
@@ -23,6 +24,7 @@ impl Display for DataError {
             DataError::RollBack=> write!(f, "RollBack"),
             DataError::Reset=> write!(f, "Reset"),
             DataError::AnyNotSupported=> write!(f, "Deserialize any not supported"),
+            DataError::IgnoredAnyNotSupported => write!(f, "Deserialize ignored any not supported"),
         }
     }
 }

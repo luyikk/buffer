@@ -256,12 +256,12 @@ where
     #[inline]
     fn deserialize_ignored_any<V>(
         self,
-        _visitor: V,
+        visitor: V,
     ) -> Result<<V as Visitor<'de>>::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
-         Err(DataError::Reset)
+         Err(DataError::IgnoredAnyNotSupported)
     }
 }
 
