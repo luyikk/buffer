@@ -256,7 +256,7 @@ where
     #[inline]
     fn deserialize_ignored_any<V>(
         self,
-        visitor: V,
+        _visitor: V,
     ) -> Result<<V as Visitor<'de>>::Value, Self::Error>
     where
         V: Visitor<'de>,
