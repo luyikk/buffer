@@ -1,8 +1,8 @@
 use anyhow::Result;
+use data_rw::data_owned_reader::DataOwnedReader;
 use data_rw::{Data, DataReader};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
-use data_rw::data_owned_reader::DataOwnedReader;
 
 #[test]
 pub fn test_serde_ser() -> Result<()> {
@@ -280,7 +280,6 @@ pub fn test_serde_de() -> Result<()> {
     Ok(())
 }
 
-
 #[test]
 pub fn test_owned_serde_ser() -> Result<()> {
     {
@@ -339,7 +338,6 @@ pub fn test_owned_serde_ser() -> Result<()> {
         data.serde_serialize(c)?;
         data.serde_serialize("123123".as_bytes().to_vec())?;
 
-
         {
             let mut rdata = DataOwnedReader::new(data.clone().into());
             assert_eq!("123123", rdata.read_fixed_str()?);
@@ -396,7 +394,7 @@ pub fn test_owned_serde_de() -> Result<()> {
         struct Foo2(u8);
         data.serde_serialize(Foo2(100))?;
 
-        let mut data =DataOwnedReader::new(data.into());
+        let mut data = DataOwnedReader::new(data.into());
         assert_eq!(x, data.serde_deserialize::<Option<i32>>()?);
         assert_eq!(None, data.serde_deserialize::<Option<i32>>()?);
         assert_eq!((), data.serde_deserialize::<()>()?);
@@ -477,7 +475,6 @@ pub fn test_owned_serde_de() -> Result<()> {
 
         let b = data.serde_deserialize::<E>()?;
         assert_eq!(E::S("321321", 44, 66), b);
-
     }
     {
         let mut data = Data::new();

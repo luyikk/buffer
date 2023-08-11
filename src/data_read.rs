@@ -242,18 +242,16 @@ impl<'a> Deref for DataReader<'a> {
     }
 }
 
-impl<'a> AsRef<[u8]> for DataReader<'a>{
+impl<'a> AsRef<[u8]> for DataReader<'a> {
     #[inline]
     fn as_ref(&self) -> &[u8] {
         self.buff
     }
 }
 
-
 impl<'a> DataReader<'a> {
-
-    pub fn from<T:AsRef<[u8]> + ?Sized>(v:&'a T)->Self{
-        let buff=v.as_ref();
+    pub fn from<T: AsRef<[u8]> + ?Sized>(v: &'a T) -> Self {
+        let buff = v.as_ref();
         DataReader {
             original_len: buff.len(),
             buff,
@@ -279,9 +277,9 @@ impl<'a> DataReader<'a> {
     }
 
     #[inline]
-    pub fn reload(&mut self,buff: &'a [u8],original_len:usize){
-        self.buff=buff;
-        self.original_len=original_len;
+    pub fn reload(&mut self, buff: &'a [u8], original_len: usize) {
+        self.buff = buff;
+        self.original_len = original_len;
     }
 
     #[inline]
@@ -311,7 +309,7 @@ impl<'a> DataReader<'a> {
         let (res, have) = self.buff.split_at(len);
         self.buff = have;
 
-        cfg_if::cfg_if!{
+        cfg_if::cfg_if! {
             if #[cfg(feature ="check_utf8")]{
                  Ok(std::str::from_utf8(res)?)
             }else{
@@ -334,7 +332,7 @@ impl<'a> DataReader<'a> {
         let (res, have) = self.buff.split_at(len);
         self.buff = have;
 
-        cfg_if::cfg_if!{
+        cfg_if::cfg_if! {
             if #[cfg(feature ="check_utf8")]{
                  Ok(std::str::from_utf8(res)?)
             }else{

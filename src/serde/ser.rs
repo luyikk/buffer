@@ -5,8 +5,8 @@ use crate::serde::serialize_impl::{
 };
 use crate::Data;
 use anyhow::Result;
-use serde::{Serialize, Serializer};
 use paste::paste;
+use serde::{Serialize, Serializer};
 
 macro_rules! make_base_serialize {
     ($($type:ty)+) => {

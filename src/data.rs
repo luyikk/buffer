@@ -168,7 +168,7 @@ impl<'a> WriteNumberFixed for &'a [u8] {
     }
 }
 
-impl WriteNumberFixed for Vec<u8>{
+impl WriteNumberFixed for Vec<u8> {
     fn write(&self, data: &mut Data) {
         data.write_fixed(self.len() as u32);
         data.write_buf(self);
@@ -333,7 +333,7 @@ impl Data {
     }
 
     #[inline]
-    pub fn into_inner(self)->Vec<u8>{
+    pub fn into_inner(self) -> Vec<u8> {
         self.buff
     }
 
@@ -380,7 +380,7 @@ impl Data {
     #[inline]
     pub fn check_reserve(&mut self, size: usize) -> usize {
         let len = self.len();
-        let cap= self.capacity();
+        let cap = self.capacity();
         if size.wrapping_add(len) > cap {
             self.reserve(size.wrapping_add(len));
         }
@@ -388,7 +388,7 @@ impl Data {
     }
 }
 
-impl Into<Vec<u8>> for Data{
+impl Into<Vec<u8>> for Data {
     #[inline]
     fn into(self) -> Vec<u8> {
         self.buff
@@ -411,7 +411,7 @@ impl DerefMut for Data {
     }
 }
 
-impl<'a> AsRef<[u8]> for Data{
+impl<'a> AsRef<[u8]> for Data {
     #[inline]
     fn as_ref(&self) -> &[u8] {
         &self.buff
@@ -457,11 +457,8 @@ pub fn compute_raw_varint32_size(value: u32) -> usize {
     compute_raw_varint64_size(value as u64)
 }
 
-impl From<Vec<u8>> for Data{
+impl From<Vec<u8>> for Data {
     fn from(buff: Vec<u8>) -> Self {
-        Data{
-            buff,
-            mode: 0
-        }
+        Data { buff, mode: 0 }
     }
 }

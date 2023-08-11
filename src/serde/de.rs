@@ -261,7 +261,7 @@ where
     where
         V: Visitor<'de>,
     {
-         Err(DataError::IgnoredAnyNotSupported)
+        Err(DataError::IgnoredAnyNotSupported)
     }
 }
 

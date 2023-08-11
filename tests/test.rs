@@ -1,15 +1,14 @@
 use anyhow::Result;
 use data_rw::{Data, DataReader};
 
-
 #[test]
-fn test_resize()->Result<()>{
-    let mut data=Data::with_capacity(128);
+fn test_resize() -> Result<()> {
+    let mut data = Data::with_capacity(128);
     data.write_fixed(include_str!("./test.txt"));
 
-    let mut rd=DataReader::from(&data);
-    let r= rd.read_fixed_str()?;
-    assert_eq!(r,include_str!("./test.txt"));
+    let mut rd = DataReader::from(&data);
+    let r = rd.read_fixed_str()?;
+    assert_eq!(r, include_str!("./test.txt"));
     Ok(())
 }
 
