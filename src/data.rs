@@ -1,5 +1,7 @@
+use crate::serde::error::DataError;
 use anyhow::{ensure, Result};
 use auto_impl::auto_impl;
+use serde::Serialize;
 use std::mem::size_of;
 use std::ops::{Deref, DerefMut};
 
@@ -101,6 +103,8 @@ impl_number_fixed!(i32);
 impl_number_fixed!(u32);
 impl_number_fixed!(i64);
 impl_number_fixed!(u64);
+impl_number_fixed!(i128);
+impl_number_fixed!(u128);
 impl_number_fixed!(f32);
 impl_number_fixed!(f64);
 
@@ -156,14 +160,14 @@ impl<'a> WriteNumberFixed for &'a [u8] {
     fn write(&self, data: &mut Data) {
         let len = self.len() as u32;
         data.write_fixed(len);
-        data.write_buf(*self);
+        data.write_buf(self);
     }
 
     #[inline]
     fn write_at(&self, idx: usize, data: &mut Data) -> Result<()> {
         let len = self.len() as u32;
-        data.write_fixed_at(idx, &len)?;
-        data.write_buf_at(idx + 4, *self)?;
+        data.write_fixed_at(idx, len)?;
+        data.write_buf_at(idx + 4, self)?;
         Ok(())
     }
 }
@@ -295,7 +299,7 @@ impl WriteNumberVar for &[u8] {
     fn write(&self, data: &mut Data) {
         let len = self.len() as u64;
         data.write_var_integer(len);
-        data.write_buf(*self);
+        data.write_buf(self);
     }
 }
 
@@ -330,6 +334,13 @@ impl Data {
             buff: Vec::with_capacity(cap),
             mode: 0,
         }
+    }
+
+    #[inline]
+    pub fn serialize<T: Serialize>(value: T) -> Result<Self, DataError> {
+        let mut data = Data::new();
+        data.serde_serialize(value)?;
+        Ok(data)
     }
 
     #[inline]
@@ -388,10 +399,10 @@ impl Data {
     }
 }
 
-impl Into<Vec<u8>> for Data {
+impl From<Data> for Vec<u8> {
     #[inline]
-    fn into(self) -> Vec<u8> {
-        self.buff
+    fn from(val: Data) -> Self {
+        val.buff
     }
 }
 
@@ -411,7 +422,7 @@ impl DerefMut for Data {
     }
 }
 
-impl<'a> AsRef<[u8]> for Data {
+impl AsRef<[u8]> for Data {
     #[inline]
     fn as_ref(&self) -> &[u8] {
         &self.buff

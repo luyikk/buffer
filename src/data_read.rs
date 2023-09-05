@@ -1,4 +1,6 @@
+use crate::serde::error::DataError;
 use anyhow::{bail, ensure, Result};
+use serde::Deserialize;
 use std::convert::TryInto;
 use std::mem::size_of;
 use std::ops::Deref;
@@ -80,6 +82,8 @@ impl_read_number_fixed!(u32);
 impl_read_number_fixed!(i32);
 impl_read_number_fixed!(u64);
 impl_read_number_fixed!(i64);
+impl_read_number_fixed!(i128);
+impl_read_number_fixed!(u128);
 impl_read_number_fixed!(f32);
 impl_read_number_fixed!(f64);
 
@@ -250,6 +254,7 @@ impl<'a> AsRef<[u8]> for DataReader<'a> {
 }
 
 impl<'a> DataReader<'a> {
+    #[inline]
     pub fn from<T: AsRef<[u8]> + ?Sized>(v: &'a T) -> Self {
         let buff = v.as_ref();
         DataReader {
@@ -257,6 +262,18 @@ impl<'a> DataReader<'a> {
             buff,
             mode: 0,
         }
+    }
+
+    #[inline]
+    pub fn deserialize<'de, D: Deserialize<'de>, T: AsRef<[u8]>>(
+        v: &'de T,
+    ) -> Result<D, DataError> {
+        let buff = v.as_ref();
+        D::deserialize(&mut DataReader {
+            original_len: buff.len(),
+            buff,
+            mode: 0,
+        })
     }
 
     #[inline]

@@ -33,7 +33,7 @@ impl<'a> Serializer for &'a mut Data {
     type SerializeStruct = DataSerializeTupleStruct<'a>;
     type SerializeStructVariant = DataSerializeTupleVariant<'a>;
 
-    make_base_serialize!(bool i8 u8 i16 u16 i32 u32 i64 u64 f32 f64);
+    make_base_serialize!(bool i8 u8 i16 u16 i32 u32 i64 u64 f32 f64 i128 u128);
 
     #[inline]
     fn serialize_char(self, v: char) -> Result<Self::Ok, Self::Error> {

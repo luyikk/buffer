@@ -40,6 +40,8 @@ where
     make_deserialize!(u32);
     make_deserialize!(i64);
     make_deserialize!(u64);
+    make_deserialize!(i128);
+    make_deserialize!(u128);
     make_deserialize!(f32);
     make_deserialize!(f64);
 
